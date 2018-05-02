@@ -68,9 +68,10 @@ public class CardPile : MonoBehaviour {
         int numOfDisplay = (numOfDisplayVar <= deck.Count) ? numOfDisplayVar : deck.Count;
 
         for(int i = 0; i < numOfDisplay; i++){
-            GameObject g = Instantiate(Resources.Load("Card"), new Vector3(-4 + i*2, 0, 0), Quaternion.identity) as GameObject;
+            GameObject g = Instantiate(Resources.Load("Card"), new Vector3(-2 + i*2, 0, 0), Quaternion.identity) as GameObject;
             g.GetComponent<SpriteRenderer>().sortingLayerName = "New Menu Canvas";
             g.transform.GetChild(0).GetComponent<SpriteRenderer>().sortingLayerName = "New Menu Canvas";
+            g.transform.SetParent(gameObject.transform);
           //  g.layer = LayerMask.NameToLayer("CardAboveCanvas");
             displayed.Add(g);
             cardPositions.Add(displayed[i].transform.position);
@@ -106,6 +107,7 @@ public class CardPile : MonoBehaviour {
                 displayed[displayed.Count - 1].GetComponent<Card>().AddState(deck[currentIndex + 1]);
                 displayed[displayed.Count - 1].GetComponent<SpriteRenderer>().sortingLayerName = "New Menu Canvas";
                 displayed[displayed.Count - 1].transform.GetChild(0).GetComponent<SpriteRenderer>().sortingLayerName = "New Menu Canvas";
+                displayed[displayed.Count - 1].transform.SetParent(gameObject.transform);
 
 
             } else {
@@ -132,10 +134,10 @@ public class CardPile : MonoBehaviour {
                 displayed[0].GetComponent<Card>().AddState(deck[currentIndex - 1]);
                 displayed[0].GetComponent<SpriteRenderer>().sortingLayerName = "New Menu Canvas";
                 displayed[0].transform.GetChild(0).GetComponent<SpriteRenderer>().sortingLayerName = "New Menu Canvas";
+                displayed[0].transform.SetParent(gameObject.transform);
 
-
-
-            } else {
+            }
+            else {
                 indexFive--;
             }
             displayed[indexFive].GetComponent<Card>().Highlight();
@@ -155,8 +157,9 @@ public class CardPile : MonoBehaviour {
     }
 
     public void DestroyAll(){
-        for(int i = 0; i < displayed.Count; i++){
-            Destroy(displayed[i]);
+        int size = displayed.Count;
+        for(int i = 0; i < size; i++){
+            Destroy(displayed[0]);
         }
         Destroy(gameObject);
     }

@@ -39,7 +39,7 @@ public class CardStateBuilder {
     }
 
     public static CardState GetRandomEnemyCard(){
-      if(allEnemyCardState != null) return allEnemyCardState[r.Next(allCardState.Count)];
+      if(allEnemyCardState != null) return allEnemyCardState[r.Next(allEnemyCardState.Count)];
       else return null;
     }
 

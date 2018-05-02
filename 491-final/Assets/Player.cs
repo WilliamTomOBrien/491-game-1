@@ -21,7 +21,7 @@ public class Player : Entity {
         currentEnergy = 4;
 
         handObjects = new List<GameObject>();
-        effects = new List<Effect>();
+        energyObjects = new List<GameObject>();
 
         energyPerTurn = 4;
         currentEnergy = energyPerTurn;
@@ -61,9 +61,48 @@ public class Player : Entity {
             //AddCard(new DumpState());
         }
     }
-    
+
+    public override void DestroyAll()
+    {
+        base.DestroyAll();
+        int size = handObjects.Count;
+        for(int i = 0; i < size; i++)
+        {
+            Destroy(handObjects[0]);
+            handObjects.Remove(handObjects[0]);
+        }
+        size = energyObjects.Count;
+        for (int i = 0; i < size; i++)
+        {
+            Destroy(energyObjects[0]);
+            energyObjects.Remove(energyObjects[0]);
+        }
+
+    }
+
     override public bool BeginTurn() {
         bool result = base.BeginTurn();
+        int sizeObjects = handObjects.Count;
+        
+        for(int i = 0; i < sizeObjects; i++)
+        {
+            if(handObjects[0] != null)
+            {
+                Destroy(handObjects[0]);
+            }
+            handObjects.Remove(handObjects[0]);
+        }
+
+        int sizeEnergy = energyObjects.Count;
+        for(int i = 0; i < sizeEnergy; i++)
+        {
+            if(energyObjects[0] != null)
+            {
+                Destroy(energyObjects[0]);
+            }
+            energyObjects.Remove(energyObjects[0]);
+        }
+
         List<CardState> hand = GetHand();
         int numCards = hand.Count;
         for (int i = 0; i < numCards; i++) {
@@ -75,7 +114,7 @@ public class Player : Entity {
         if (player1) {
             y = -1.86F;
         }
-        energyObjects = new List<GameObject>();
+        
         for (int i = 0; i < GetEnergy(); i++) {
             energyObjects.Add(Instantiate(GameController.GetGameController().energy, new Vector2(-6.66f + (i * 0.75f), y), Quaternion.identity));
         }
@@ -83,11 +122,29 @@ public class Player : Entity {
     }
 
     override public void EndTurn() {
-        int numCards = GetHand().Count;
+        int numCards = handObjects.Count;
         for (int i = 0; i < numCards; i++) {
-            Discard(0);
+            //Discard(0);
             Destroy(handObjects[0]);
             handObjects.RemoveAt(0);
+        }
+
+        Card[] cards = GetComponents<Card>();
+        int size = cards.Length;
+
+        for(int i = 0; i < size; i++)
+        {
+            Destroy(cards[i].gameObject);
+        }
+
+        int sizeEnergy = energyObjects.Count;
+        for (int i = 0; i < sizeEnergy; i++)
+        {
+            if (energyObjects[0] != null)
+            {
+                Destroy(energyObjects[0]);
+            }
+            energyObjects.Remove(energyObjects[0]);
         }
     }
 
@@ -96,6 +153,7 @@ public class Player : Entity {
         if (!Discard(i)) {
             return false;
         }
+        Destroy(card);
         handObjects.Remove(card);
         return true;
     }
@@ -164,6 +222,7 @@ public class Player : Entity {
         float bound = (180f - freedom) / 2;
         if (numCards > 1) {
             for (int i = 0; i < numCards; i++) {
+                if (handObjects.Count != numCards) break;
                 handObjects[i].transform.position = new Vector3((float)(r * Math.Cos((Math.PI / 180) * (numCards - 1 - i) * freedom / (numCards - 1) + (Math.PI / 180) * bound)),
                 (float)(-6f + r * Math.Sin((Math.PI / 180) * (numCards - 1 - i) * freedom / (numCards - 1) + (Math.PI / 180) * bound)), 0);
             }

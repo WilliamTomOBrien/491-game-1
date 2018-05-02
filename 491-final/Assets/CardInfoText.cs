@@ -26,6 +26,7 @@ public class CardInfoText : MonoBehaviour
         {
             selectedCard = temp.GetComponent<Card>();
             s = "Name: " + selectedCard.GetState().ToString() + "\n";
+            s += "Description: " + selectedCard.GetState().GetInfo() + "\n";
             s += "Required Energy: " + selectedCard.GetState().GetCost();
             info.text = s;
         }

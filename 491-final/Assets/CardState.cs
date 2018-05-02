@@ -27,6 +27,10 @@ public class CardState {
         icon = Resources.Load<Sprite>(spritePath);
     }
 
+    public String GetSpriteString() {
+        return spritePath;
+    }
+
     public CardState(CardState c) : this(c.name, c.cost, c.tasks, c.audioPath, c.spritePath, c.info) {
     }
 
@@ -50,6 +54,11 @@ public class CardState {
     public Sprite GetIcon()
     {
         return icon;
+    }
+
+    public string GetInfo()
+    {
+        return info;
     }
 
     public void RunTask(GameObject input, int i){

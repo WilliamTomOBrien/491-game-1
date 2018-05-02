@@ -37,7 +37,7 @@ public class Enemy : Entity {
       foreach (Task task in c.GetTasks()) {
           task.Run(attackedPlayer);
       }
-      StartCoroutine(Animation(gameObject, attackedPlayer));
+      StartCoroutine(Animation(gameObject, attackedPlayer, c));
     }
 
     bool animateState = false;
@@ -57,13 +57,14 @@ public IEnumerator flash(GameObject g) {
         //gC.SetGameState(GameController.GameType.Battle);
 }
 
-public IEnumerator Animation(GameObject g, GameObject attacked){
-        Sprite newSprite = Resources.Load<Sprite>("Sprites/FistStatic");//gameObject.transform.GetChild(0).GetComponent<SpriteRenderer>().sprite;//Resources.Load<Sprite>(cardState.GetSpriteString());
+public IEnumerator Animation(GameObject g, GameObject attacked, CardState cardState){
+        Sprite newSprite = Resources.Load<Sprite>(cardState.GetSpriteString());//gameObject.transform.GetChild(0).GetComponent<SpriteRenderer>().sprite;//Resources.Load<Sprite>(cardState.GetSpriteString());
         GameObject animated = new GameObject();
         SpriteRenderer renderer = animated.AddComponent<SpriteRenderer>();
         renderer.sprite = newSprite;
+        renderer.sortingLayerName = "ArrowLayer";
 
-
+        animated.transform.SetParent(gameObject.transform);
 
         GameController gC = GameController.GetGameController();
         animated.transform.position = g.transform.position;

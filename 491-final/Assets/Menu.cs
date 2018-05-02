@@ -31,7 +31,7 @@ public class Menu : MonoBehaviour {
 
 
   public void AddText(Vector3 position, string text){
-    Vector3 p = position + new Vector3(10.3f, 6.3f, 100f);
+    Vector3 p = position + new Vector3(0f, 0f, 100f);
     GameObject g = Instantiate(Resources.Load("Text"), p, Quaternion.identity) as GameObject;
 
     g.transform.SetParent(gameObject.transform.GetChild(0).transform, false);
@@ -105,7 +105,7 @@ public class Menu : MonoBehaviour {
   public static GameObject InitialMenu(){
     GameObject g = Instantiate(Resources.Load("Menu"), new Vector3(0,0,0), Quaternion.identity) as GameObject;
     Menu menu = g.GetComponent<Menu>();
-    menu.AddSelectableText(new Vector3(0,0,0), "Start Game");
+    menu.AddSelectableText(new Vector3(10.3f,6.3f,0), "Start Game");
 
     return g;
   }
@@ -113,12 +113,23 @@ public class Menu : MonoBehaviour {
   public static GameObject PickACardMenu(){
     GameObject g = Instantiate(Resources.Load("Menu"), new Vector3(0,0,0), Quaternion.identity) as GameObject;
     Menu menu = g.GetComponent<Menu>();
-    menu.AddText(new Vector3(0,1,0), "Select a Card to add to a Player's Deck");
+    menu.AddText(new Vector3(10.3f,9.3f,0), "Select a Card to add to a Player's Deck");
 
     return g;
   }
 
-  public IEnumerator fadeOut(){
+   public static GameObject DeathMenu(int score)
+   {
+        GameObject g = Instantiate(Resources.Load("Menu"), new Vector3(0, 0, 0), Quaternion.identity) as GameObject;
+        Menu menu = g.GetComponent<Menu>();
+        menu.AddText(new Vector3(10.3f, 8.3f, 0), "Oh no! One of your heroes died!");
+        menu.AddText(new Vector3(10.3f, 6.3f, 0), "You scored " + score + " points.");
+        menu.AddSelectableText(new Vector3(10.3f, 3.3f, 0), "Play Again?");
+
+        return g;
+    }
+
+    public IEnumerator fadeOut(){
         GameController.GetGameController().gameType = GameController.GameType.NullState;
     float opacity = 1f;
     SpriteRenderer s = gameObject.GetComponent<SpriteRenderer>();

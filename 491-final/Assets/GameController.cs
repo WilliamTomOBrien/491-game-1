@@ -4,6 +4,8 @@ using UnityEngine.UI;
 
 public class GameController : MonoBehaviour {
 
+    int totalScore = 0;
+
 public Entity currentEntity;
 public Player currentPlayer;
 public Enemy currentEnemy;
@@ -37,7 +39,8 @@ public enum GameType {
         BattleSetup,
         PickACard,
         NullState,
-        InitialMenu
+        InitialMenu,
+        LoseMenu
 };
 public GameType gameType;
 
@@ -71,10 +74,16 @@ void Awake () {
 
         Quaternion q = Quaternion.identity;
         selectionType = SelectionType.SelectCardToPlay;
+
         List<GameObject> gameObjectEntities = new List<GameObject> {
                 InstantiateEntity("Player", -8.1F, 1),
                 InstantiateEntity("Player", -5.2F, 1),
         };
+
+        if(entities != null && entities.Count != 0){
+            int size = entities.Count;
+            for (int i = 0; i < size; i++) Kill(entities[0]);
+        }
         entities = new List<Entity>();
         foreach (GameObject o in gameObjectEntities) {
                 entities.Add(o.GetComponent<Entity>());
@@ -99,6 +108,10 @@ void Awake () {
 
 
         menu = Menu.InitialMenu().GetComponent<Menu>();
+}
+
+public void AddToScore(int n) {
+        totalScore += n;
 }
 
 public static GameObject InstantiateEntity(string name, float x, float y) {
@@ -172,14 +185,23 @@ void Update() {
         }
         else if (gameType == GameType.Battle) {
 
-                if (entities.Count < 3) {
-                        currentPlayer.EndTurn();
-                        gameType = GameType.PickACard;
-                        cardPile = CardPile.MakeCardPile(3);
-                        menu = Menu.PickACardMenu().GetComponent<Menu>();
-                }
+                if(GetPlayers().Count != 2) {
+                         menu = Menu.DeathMenu(totalScore).GetComponent<Menu>();
+                         gameType = GameType.LoseMenu;
+                         int size = entities.Count;
+                         for(int i = 0; i < size; i++){
+                            Kill(entities[0]);
+                         }
+                } else if (entities.Count < 3)
+                {
+                 AddToScore(30);
+                    currentPlayer.EndTurn();
+                    gameType = GameType.PickACard;
+                    cardPile = CardPile.MakeCardPile(3);
+                    menu = Menu.PickACardMenu().GetComponent<Menu>();
+                  }
 
-                if (currentEntity is Player) {
+            if (currentEntity is Player) {
                         currentPlayer = (Player)currentEntity;
                         currentPlayer.OrganizeCards();
 
@@ -188,6 +210,7 @@ void Update() {
 
                                 int numCards = currentPlayer.GetHandSize();
                                 if (numCardsHighlighted == 0 && numCards > 0) {
+                                        
                                         currentPlayer.HighlightCard(0);
                                         numCardsHighlighted++;
                                         selectionIndex = 0;
@@ -197,20 +220,29 @@ void Update() {
                                 if (prevCode == UNUSED_KEY) {
                                         switch (key) {
                                         case KeyCode.LeftArrow:
-                                                CardSelect(-1, numCards);
+                                                CardSelect(-1, numCards + 1);
                                                 break;
 
                                         case KeyCode.RightArrow:
-                                                CardSelect(1, numCards);
+                                                CardSelect(1, numCards + 1);
                                                 break;
 
                                         case KeyCode.Return:
                                                 if (selectionType == SelectionType.SelectCardToPlay) {
-                                                        CardState c = currentPlayer.GetCard(selectionIndex).GetComponent<Card>().GetState();
-                                                        if (c.GetCost() <= currentPlayer.GetEnergy())
-                                                        {
-                                                                currentPlayer.ActivateCard(selectionIndex);
-                                                                numCardsHighlighted--;
+                                                        if(selectionIndex != numCards) {
+                                                            CardState c = currentPlayer.GetCard(selectionIndex).GetComponent<Card>().GetState();
+                                                            if (c.GetCost() <= currentPlayer.GetEnergy())
+                                                             {
+                                                                 currentPlayer.ActivateCard(selectionIndex);
+                                                                 numCardsHighlighted--;
+                                                             }
+
+                                                        } else { 
+                                                               GameObject.FindWithTag("EndTurnButton").GetComponent<SpriteRenderer>().sprite = Resources.Load<Sprite>("Sprites/button");
+
+                                                               numCardsHighlighted = 0;
+                                                               NextTurn();
+
                                                         }
                                                 } else {
                                                         input = currentPlayer.GetCardObject(selectionIndex);
@@ -353,7 +385,40 @@ void Update() {
                 gameType = GameType.Battle;
            // Debug.Log(gameType + " here");
         }
-        Debug.Log("end of update");
+        else if (gameType == GameType.LoseMenu)
+        {
+            totalScore = 0;
+            KeyCode key = GetKey();
+            if (prevCode == UNUSED_KEY)
+            {
+                switch (key)
+                {
+                    case KeyCode.LeftArrow:
+                        menu.Left();
+                        break;
+
+                    case KeyCode.RightArrow:
+                        menu.Right();
+                        break;
+
+                    case KeyCode.Return:
+                        if (menu.Select() == "Play Again?")
+                        {
+                            // Debug.Log("This should run once start game");
+                            gameType = GameType.BattleSetup;
+                            menu.DestroyAll();
+                            Awake();
+                            Start();
+                        }
+                        break;
+                }
+            }
+            prevCode = key;
+            //Debug.Log(gameType + " here");
+
+        }
+
+        //Debug.Log("end of update");
 }
 
 private void NextTurn() {
@@ -364,15 +429,23 @@ private void NextTurn() {
 }
 
 public void Kill(Entity e) {
+        AddToScore(15);
+        e.DestroyAll();
         entities.Remove(e);
         Destroy(e.GetGameObject());
 }
 
 public void CardSelect(int n, int numCards) {
-        currentPlayer.UnHighlightCard(selectionIndex);
+        if (selectionIndex != numCards - 1) currentPlayer.UnHighlightCard(selectionIndex);
+        else {
+            GameObject.FindWithTag("EndTurnButton").GetComponent<SpriteRenderer>().sprite = Resources.Load<Sprite>("Sprites/button");
+        }
         selectionIndex = (selectionIndex + n + numCards) % numCards;
-        currentPlayer.HighlightCard(selectionIndex);
-}
+        if(selectionIndex != numCards - 1) currentPlayer.HighlightCard(selectionIndex);
+        else {
+            GameObject.FindWithTag("EndTurnButton").GetComponent<SpriteRenderer>().sprite = Resources.Load<Sprite>("Sprites/button2");
+        }
+    }
 
 public GameObject GetInput() {
         return input;

@@ -26,11 +26,17 @@ public class Entity : MonoBehaviour {
     private List<CardState> trash = new List<CardState>();
     protected List<Effect> effects;
 
+    public virtual void DestroyAll()
+    {
+
+    }
+
     public void Awake () {
         gameObject = base.gameObject;
         controller = GameController.GetGameController();
         currentEnergy = energyPerTurn;
         hp = maxHP;
+        effects = new List<Effect>();
     }
 
     public GameObject GetGameObject() {
@@ -101,7 +107,18 @@ public class Entity : MonoBehaviour {
     }
 
     public virtual bool BeginTurn() {
+
+        Card[] cards = GetComponents<Card>();
+        int size = cards.Length;
+
+        for (int i = 0; i < size; i++)
+        {
+            Destroy(cards[i].gameObject);
+        }
+
+
         currentEnergy = energyPerTurn;
+        ApplyEffects();
         for (int i = 0; i < cardsPerTurn; i++) {
             if (!DrawCard()) {
                 return false;
@@ -225,6 +242,8 @@ public class Entity : MonoBehaviour {
     }
 
     public void Highlight() {
+        if (gameObject.GetComponent<SpriteRenderer>().enabled == false) gameObject.GetComponent<SpriteRenderer>().enabled = true;
+
         if (GameObject.FindWithTag("Arrow")) {
             Destroy(GameObject.FindWithTag("Arrow"));
         }
