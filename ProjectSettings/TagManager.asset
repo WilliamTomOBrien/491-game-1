@@ -1,0 +1,83 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!78 &1
+TagManager:
+  serializedVersion: 2
+  tags:
+  - Enemy
+  - Player1
+  - Player2
+  - Arrow
+  - HighlightedEntity
+  - Entity
+  - CardPile
+  - SelectedCard
+  - MenuCanvas
+  - EndTurnButton
+  - CardInfo
+  - CardInfoBox
+  layers:
+  - Default
+  - TransparentFX
+  - Ignore Raycast
+  - 
+  - Water
+  - UI
+  - 
+  - 
+  - EntityLayer
+  - CardLayer
+  - SliderLayer
+  - ArrowLayer
+  - 
+  - publicMenu Layer IEnumerator Flash(GameObject g) {         int i = 0;         bool
+    thing = false;         while (i < 10 && !thing) {             try {                 Renderer[]
+    r = g.GetComponents<Renderer>();                 for (int k = 0; k < r.Length;
+    k++) {                     r[k].enabled = !r[k].enabled;                 }             }
+    catch (Exception e) {                 thing = true;             }             if
+    (thing) {                 yield return null;             } else {                 yield
+    return new WaitForSeconds(.08f);             }             i++;         }         if
+    (!thing) {             Destroy(gameObject);         }     }
+  - Menu Layer
+  - Menu Canvas
+  - New Menu Canvas
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  m_SortingLayers:
+  - name: Default
+    uniqueID: 0
+    locked: 0
+  - name: CardLayer
+    uniqueID: 4226190883
+    locked: 0
+  - name: EntityLayer
+    uniqueID: 2258113541
+    locked: 0
+  - name: SliderLayer
+    uniqueID: 265258233
+    locked: 0
+  - name: ArrowLayer
+    uniqueID: 3203174223
+    locked: 0
+  - name: New Menu Canvas
+    uniqueID: 3130477757
+    locked: 0
+  - name: Menu Canvas
+    uniqueID: 3982738577
+    locked: 0
+  - name: Menu Layer
+    uniqueID: 498962137
+    locked: 0

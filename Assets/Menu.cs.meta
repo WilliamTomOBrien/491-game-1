@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: deb3243801200b24091aa8301d8aecb5
+timeCreated: 1525133136
+licenseType: Free
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences:
+  - bridgnorth: {fileID: 12800000, guid: 305dbb9014c2b6e45885dd84fa5a0b2d, type: 3}
+  - bridgnorthBold: {fileID: 12800000, guid: da6be00afae082b4f9a8d2a99490895e, type: 3}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
